@@ -1,69 +1,134 @@
-import Image from "next/image";
+const features = [
+  {
+    title: "Scheduled checks",
+    body: "Every monitor is polled on its own interval with per-request timeouts, so a slow endpoint never blocks the rest of the queue.",
+  },
+  {
+    title: "Incident history",
+    body: "Each check is recorded with its status code and response time, which is what turns raw pings into uptime percentages.",
+  },
+  {
+    title: "Public status pages",
+    body: "Share a read-only page for your users. No account required to view it, and nothing internal leaks.",
+  },
+];
+
+// Placeholder shape for the landing preview. Real check data lands in a later milestone.
+const previewBars = [
+  99.9, 99.8, 100, 100, 99.4, 100, 100, 98.2, 100, 100, 99.9, 100, 100, 100,
+  99.7, 100, 100, 100, 99.9, 100, 100, 96.5, 100, 100, 100, 99.8, 100, 100,
+  100, 100,
+];
+
+function barTone(uptime: number) {
+  if (uptime >= 99.5) return "bg-emerald-500";
+  if (uptime >= 98) return "bg-amber-400";
+  return "bg-rose-500";
+}
+
+// Spread the 95-100% range across the full bar so small dips stay visible.
+function barHeight(uptime: number) {
+  const scaled = ((uptime - 95) / 5) * 100;
+  return Math.min(100, Math.max(20, scaled));
+}
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <div className="flex flex-1 flex-col bg-zinc-950 text-zinc-100">
+      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-6">
+        <span className="flex items-center gap-2 font-semibold tracking-tight">
+          <span className="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500" />
+          Pulse
+        </span>
+        <nav className="flex items-center gap-6 text-sm text-zinc-400">
+          <a className="transition-colors hover:text-zinc-100" href="#preview">
+            Preview
+          </a>
+          <a
+            className="transition-colors hover:text-zinc-100"
+            href="https://github.com/Izaher18"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            GitHub
+          </a>
+        </nav>
+      </header>
+
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6">
+        <section className="pt-16 pb-20 sm:pt-24">
+          <p className="text-sm font-medium text-emerald-400">Uptime monitoring</p>
+          <h1 className="mt-3 max-w-2xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+            Know your service is down before your users tell you.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-5 max-w-xl text-lg leading-8 text-zinc-400">
+            Pulse polls your endpoints on a schedule, records every response, and
+            publishes the results to a status page you can hand to your users.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href="#preview"
+              className="rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-medium text-zinc-950 transition-colors hover:bg-emerald-400"
+            >
+              See what it looks like
+            </a>
+            <a
+              href="https://github.com/Izaher18"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg border border-zinc-800 px-5 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-700 hover:text-zinc-100"
+            >
+              Read the source
+            </a>
+          </div>
+        </section>
+
+        <section
+          id="preview"
+          className="scroll-mt-6 rounded-xl border border-zinc-800 bg-zinc-900/50 p-6"
+        >
+          <div className="flex items-baseline justify-between">
+            <h2 className="font-medium">api.example.com</h2>
+            <span className="text-sm text-zinc-500">last 30 days</span>
+          </div>
+          <div className="mt-4 flex h-12 items-end gap-1">
+            {previewBars.map((uptime, i) => (
+              <div
+                key={i}
+                className={`flex-1 rounded-sm ${barTone(uptime)}`}
+                style={{ height: `${barHeight(uptime)}%` }}
+                title={`${uptime}% uptime`}
+              />
+            ))}
+          </div>
+          <p className="mt-4 text-sm text-zinc-500">
+            Sample rendering. Live check data arrives with the monitoring engine.
+          </p>
+        </section>
+
+        <section className="grid gap-6 py-20 sm:grid-cols-3">
+          {features.map((feature) => (
+            <div key={feature.title}>
+              <h3 className="font-medium">{feature.title}</h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-400">{feature.body}</p>
+            </div>
+          ))}
+        </section>
       </main>
+
+      <footer className="border-t border-zinc-900">
+        <div className="mx-auto w-full max-w-5xl px-6 py-6 text-sm text-zinc-500">
+          Built by{" "}
+          <a
+            className="text-zinc-300 transition-colors hover:text-zinc-100"
+            href="https://github.com/Izaher18"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Ilias Zaher
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }
