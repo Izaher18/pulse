@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pulse
 
-## Getting Started
+Uptime monitoring with public status pages. Pulse polls your endpoints on a
+schedule, records the status code and response time of every check, and turns
+that history into uptime percentages you can publish.
 
-First, run the development server:
+> **Status:** in progress. The landing page and project scaffold are done; the
+> monitoring engine is next. See the roadmap below for what is and is not built.
+
+## Why I built it
+
+I wanted a project that exercises the parts of web development that are easy to
+skip in coursework: a background job that runs on a schedule, a data model that
+has to answer aggregate questions quickly, and a public page that stays fast
+while the write path is busy.
+
+## Stack
+
+- **Next.js 16** (App Router) and **React 19**
+- **TypeScript** in strict mode
+- **Tailwind CSS v4**
+- Postgres via Prisma, and a scheduled checker (both coming, see roadmap)
+
+## Running locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app runs at [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Roadmap
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- [x] **Project scaffold** — Next.js, TypeScript, Tailwind, landing page
+- [ ] **Data model** — monitors, checks, and incidents in Postgres via Prisma
+- [ ] **Check engine** — scheduled HTTP polling with timeouts and retries
+- [ ] **Dashboard** — authenticated CRUD for monitors
+- [ ] **Status pages** — public, read-only uptime pages per project
+- [ ] **CI and deploy** — GitHub Actions test run, deployed to Vercel
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
