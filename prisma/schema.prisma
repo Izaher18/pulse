@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// An endpoint Pulse should poll. The checker (next milestone) reads enabled
+/// rows and writes Check + Incident records.
+model Monitor {
+  id              String     @id @default(cuid())
+  name            String
+  url             String     @unique
+  intervalSeconds Int        @default(60)
+  timeoutMs       Int        @default(10000)
+  enabled         Boolean    @default(true)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  checks          Check[]
+  incidents       Incident[]
+}
+
+/// One HTTP poll. `ok` is stored so uptime over a window is a COUNT, not a
+/// scan-and-classify of every status code.
+model Check {
+  id             String   @id @default(cuid())
+  monitorId      String
+  monitor        Monitor  @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  ok             Boolean
+  statusCode     Int?
+  responseTimeMs Int?
+  error          String?
+  checkedAt      DateTime @default(now())
+
+  @@index([monitorId, checkedAt])
+}
+
+/// A downtime stretch: opened on failure, resolved on the next success.
+/// `resolvedAt` is null while the monitor is still down.
+model Incident {
+  id         String    @id @default(cuid())
+  monitorId  String
+  monitor    Monitor   @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  openedAt   DateTime  @default(now())
+  resolvedAt DateTime?
+  cause      String?
+
+  @@index([monitorId, openedAt])
+}

@@ -4,8 +4,8 @@ Uptime monitoring with public status pages. Pulse polls your endpoints on a
 schedule, records the status code and response time of every check, and turns
 that history into uptime percentages you can publish.
 
-> **Status:** in progress. The landing page and project scaffold are done; the
-> monitoring engine is next. See the roadmap below for what is and is not built.
+> **Status:** in progress. The landing page, scaffold, and data model are done;
+> the monitoring engine is next. See the roadmap below for what is and is not built.
 
 ## Why I built it
 
@@ -19,21 +19,29 @@ while the write path is busy.
 - **Next.js 16** (App Router) and **React 19**
 - **TypeScript** in strict mode
 - **Tailwind CSS v4**
-- Postgres via Prisma, and a scheduled checker (both coming, see roadmap)
+- **Postgres** via **Prisma** for monitors, checks, and incidents
+- A scheduled checker (coming, see roadmap)
 
 ## Running locally
 
 ```bash
+cp .env.example .env
+docker compose up -d
 npm install
+npx prisma migrate dev
+npx prisma db seed
 npm run dev
 ```
 
-The app runs at [http://localhost:3000](http://localhost:3000).
+The app runs at [http://localhost:3000](http://localhost:3000). The landing
+page still uses placeholder preview data; live numbers wait on the checker.
+
+`npx prisma studio` opens a table browser for monitors, checks, and incidents.
 
 ## Roadmap
 
 - [x] **Project scaffold** — Next.js, TypeScript, Tailwind, landing page
-- [ ] **Data model** — monitors, checks, and incidents in Postgres via Prisma
+- [x] **Data model** — monitors, checks, and incidents in Postgres via Prisma
 - [ ] **Check engine** — scheduled HTTP polling with timeouts and retries
 - [ ] **Dashboard** — authenticated CRUD for monitors
 - [ ] **Status pages** — public, read-only uptime pages per project
