@@ -7,8 +7,8 @@ datasource db {
   provider = "postgresql"
 }
 
-/// An endpoint Pulse should poll. The checker (next milestone) reads enabled
-/// rows and writes Check + Incident records.
+/// An endpoint Pulse should poll. The checker reads enabled rows and writes
+/// Check + Incident records.
 model Monitor {
   id              String     @id @default(cuid())
   name            String

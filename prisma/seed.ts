@@ -26,6 +26,17 @@ async function main() {
     },
   });
 
+  await prisma.monitor.upsert({
+    where: { url: "https://example.com" },
+    update: {},
+    create: {
+      name: "example.com",
+      url: "https://example.com",
+      intervalSeconds: 60,
+      timeoutMs: 5000,
+    },
+  });
+
   await prisma.check.deleteMany({ where: { monitorId: monitor.id } });
   await prisma.incident.deleteMany({ where: { monitorId: monitor.id } });
 

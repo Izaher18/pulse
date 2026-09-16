@@ -4,8 +4,8 @@ Uptime monitoring with public status pages. Pulse polls your endpoints on a
 schedule, records the status code and response time of every check, and turns
 that history into uptime percentages you can publish.
 
-> **Status:** in progress. The landing page, scaffold, and data model are done;
-> the monitoring engine is next. See the roadmap below for what is and is not built.
+> **Status:** in progress. The landing page, data model, and check engine are
+> done; the dashboard is next. See the roadmap below for what is and is not built.
 
 ## Why I built it
 
@@ -20,7 +20,7 @@ while the write path is busy.
 - **TypeScript** in strict mode
 - **Tailwind CSS v4**
 - **Postgres** via **Prisma** for monitors, checks, and incidents
-- A scheduled checker (coming, see roadmap)
+- A scheduled HTTP checker with per-request timeouts and retries
 
 ## Running locally
 
@@ -34,7 +34,21 @@ npm run dev
 ```
 
 The app runs at [http://localhost:3000](http://localhost:3000). The landing
-page still uses placeholder preview data; live numbers wait on the checker.
+page still uses placeholder preview data; live numbers wait on the dashboard.
+
+Run one round of due checks, or keep a worker watching:
+
+```bash
+npm run check
+npm run check:watch
+```
+
+Each monitor is pinged on its own interval. Timeouts abort a slow request;
+5xx and network failures retry twice before the check is recorded. A failed
+check opens an incident; the next success closes it.
+
+`GET /api/cron/checks` does the same tick for a host cron or Vercel. Send
+`Authorization: Bearer $CRON_SECRET` or the route returns 401.
 
 `npx prisma studio` opens a table browser for monitors, checks, and incidents.
 
@@ -42,7 +56,7 @@ page still uses placeholder preview data; live numbers wait on the checker.
 
 - [x] **Project scaffold** — Next.js, TypeScript, Tailwind, landing page
 - [x] **Data model** — monitors, checks, and incidents in Postgres via Prisma
-- [ ] **Check engine** — scheduled HTTP polling with timeouts and retries
+- [x] **Check engine** — scheduled HTTP polling with timeouts and retries
 - [ ] **Dashboard** — authenticated CRUD for monitors
 - [ ] **Status pages** — public, read-only uptime pages per project
 - [ ] **CI and deploy** — GitHub Actions test run, deployed to Vercel
