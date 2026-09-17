@@ -85,9 +85,13 @@ numbers. It deliberately leaves out the URL being polled, status codes, and
 error text, since those describe internal infrastructure rather than whether
 the service was reachable.
 
-The page is rendered on the server and cached for 60 seconds, so a burst of
-readers costs one set of queries rather than one per visitor. Publishing,
-pausing, or forcing a check clears that cache immediately.
+Published pages are prerendered and served from a 60-second cache, so a burst
+of readers costs one set of queries rather than one per visitor. Publishing,
+pausing, or forcing a check clears that cache immediately. A `revalidate`
+export alone is not enough for a route with a dynamic segment — the published
+slugs are also listed in `generateStaticParams`, without which every request
+re-renders from the database. A monitor published after the last build renders
+on demand until the next one.
 
 Daily bars and the three uptime windows are aggregated in Postgres — a
 `date_trunc` group-by for the bars and one filtered-count query for all three

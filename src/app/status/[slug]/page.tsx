@@ -8,11 +8,28 @@ import {
   formatUptime,
   formatUtc,
 } from "@/lib/format";
-import { getPublicStatus, type PublicStatus } from "@/lib/status";
+import {
+  getPublicStatus,
+  listPublicSlugs,
+  type PublicStatus,
+} from "@/lib/status";
 
 // Anyone can hit this page, and the checker is writing to the same tables, so
 // serve a cached render and rebuild it once a minute.
 export const revalidate = 60;
+
+// Without this the route is rendered from scratch on every request: `revalidate`
+// alone does not cache a dynamic segment. Naming the published slugs up front
+// gets them prerendered and served from the cache instead.
+export async function generateStaticParams() {
+  try {
+    const slugs = await listPublicSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch {
+    // No database during the build; every page just renders on demand.
+    return [];
+  }
+}
 
 // The metadata and the page both need the same row; cache() collapses that into
 // one set of queries per render.

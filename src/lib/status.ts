@@ -150,6 +150,15 @@ export async function getPublicStatus(
   };
 }
 
+export async function listPublicSlugs(): Promise<string[]> {
+  const monitors = await prisma.monitor.findMany({
+    where: { isPublic: true },
+    select: { slug: true },
+  });
+
+  return monitors.map((monitor) => monitor.slug);
+}
+
 /// Backs the landing page preview, so the marketing copy shows real numbers
 /// instead of a hardcoded sample.
 export async function getFeaturedStatus(
