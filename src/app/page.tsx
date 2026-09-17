@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const features = [
   {
     title: "Scheduled checks",
@@ -44,6 +46,9 @@ export default function Home() {
           <a className="transition-colors hover:text-zinc-100" href="#preview">
             Preview
           </a>
+          <Link className="transition-colors hover:text-zinc-100" href="/dashboard">
+            Dashboard
+          </Link>
           <a
             className="transition-colors hover:text-zinc-100"
             href="https://github.com/Izaher18"

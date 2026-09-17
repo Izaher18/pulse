@@ -4,8 +4,8 @@ Uptime monitoring with public status pages. Pulse polls your endpoints on a
 schedule, records the status code and response time of every check, and turns
 that history into uptime percentages you can publish.
 
-> **Status:** in progress. The landing page, data model, and check engine are
-> done; the dashboard is next. See the roadmap below for what is and is not built.
+> **Status:** in progress. The landing page, data model, check engine, and
+> dashboard are done; public status pages are next. See the roadmap below.
 
 ## Why I built it
 
@@ -21,6 +21,7 @@ while the write path is busy.
 - **Tailwind CSS v4**
 - **Postgres** via **Prisma** for monitors, checks, and incidents
 - A scheduled HTTP checker with per-request timeouts and retries
+- A password-protected dashboard built on Server Actions
 
 ## Running locally
 
@@ -34,7 +35,25 @@ npm run dev
 ```
 
 The app runs at [http://localhost:3000](http://localhost:3000). The landing
-page still uses placeholder preview data; live numbers wait on the dashboard.
+page uses placeholder preview data; real numbers live in the dashboard.
+
+## Dashboard
+
+`/dashboard` lists every monitor with its 24h uptime, last response time, and
+any open incident, and it refreshes every 10 seconds. From there you can add a
+monitor, pause or resume it, force a check, or open a monitor to see its recent
+check history and incidents.
+
+It sits behind a single password. Set `DASHBOARD_PASSWORD` and a random
+`SESSION_SECRET` in `.env`, then sign in at `/login`:
+
+```bash
+openssl rand -hex 32   # value for SESSION_SECRET
+```
+
+The session is an HMAC-signed, httpOnly cookie that expires after 12 hours.
+
+## Running checks
 
 Run one round of due checks, or keep a worker watching:
 
@@ -57,7 +76,7 @@ check opens an incident; the next success closes it.
 - [x] **Project scaffold** — Next.js, TypeScript, Tailwind, landing page
 - [x] **Data model** — monitors, checks, and incidents in Postgres via Prisma
 - [x] **Check engine** — scheduled HTTP polling with timeouts and retries
-- [ ] **Dashboard** — authenticated CRUD for monitors
+- [x] **Dashboard** — authenticated CRUD for monitors
 - [ ] **Status pages** — public, read-only uptime pages per project
 - [ ] **CI and deploy** — GitHub Actions test run, deployed to Vercel
 
