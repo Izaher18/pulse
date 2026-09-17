@@ -12,10 +12,15 @@ datasource db {
 model Monitor {
   id              String     @id @default(cuid())
   name            String
+  /// Public status page address. Kept separate from `id` so the page URL
+  /// stays readable and does not expose an internal identifier.
+  slug            String     @unique
   url             String     @unique
   intervalSeconds Int        @default(60)
   timeoutMs       Int        @default(10000)
   enabled         Boolean    @default(true)
+  /// Opt-in. A monitor is private until its operator publishes it.
+  isPublic        Boolean    @default(false)
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
   checks          Check[]
