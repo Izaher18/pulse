@@ -10,8 +10,10 @@ export type MonitorInput = {
 export type MonitorSummary = {
   id: string;
   name: string;
+  slug: string;
   url: string;
   enabled: boolean;
+  isPublic: boolean;
   intervalSeconds: number;
   timeoutMs: number;
   lastCheck: {
@@ -123,8 +125,10 @@ export async function listMonitorSummaries(
       return {
         id: monitor.id,
         name: monitor.name,
+        slug: monitor.slug,
         url: monitor.url,
         enabled: monitor.enabled,
+        isPublic: monitor.isPublic,
         intervalSeconds: monitor.intervalSeconds,
         timeoutMs: monitor.timeoutMs,
         lastCheck: lastCheck

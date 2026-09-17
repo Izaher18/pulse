@@ -50,20 +50,35 @@ export default async function MonitorPage({
             <h1 className="truncate text-2xl font-semibold tracking-tight">
               {monitor.name}
             </h1>
-            <a
-              href={monitor.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-1 block truncate text-sm text-zinc-500 transition-colors hover:text-zinc-300"
-            >
-              {monitor.url}
-            </a>
-          </div>
-          <MonitorControls
-            monitorId={monitor.id}
-            enabled={monitor.enabled}
-            showDelete
-          />
+              <a
+                href={monitor.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 block truncate text-sm text-zinc-500 transition-colors hover:text-zinc-300"
+              >
+                {monitor.url}
+              </a>
+              <p className="mt-1 truncate text-sm">
+                {monitor.isPublic ? (
+                  <Link
+                    href={`/status/${monitor.slug}`}
+                    className="text-emerald-500/90 transition-colors hover:text-emerald-400"
+                  >
+                    Public page: /status/{monitor.slug}
+                  </Link>
+                ) : (
+                  <span className="text-zinc-600">
+                    Private · publish to open /status/{monitor.slug}
+                  </span>
+                )}
+              </p>
+            </div>
+            <MonitorControls
+              monitorId={monitor.id}
+              enabled={monitor.enabled}
+              isPublic={monitor.isPublic}
+              showDelete
+            />
         </div>
       </div>
 

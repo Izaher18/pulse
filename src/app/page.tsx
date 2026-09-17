@@ -1,4 +1,9 @@
 import Link from "next/link";
+import { UptimeBars } from "@/components/uptime-bars";
+import { formatUptime } from "@/lib/format";
+import { getFeaturedStatus, type PublicStatus } from "@/lib/status";
+
+export const revalidate = 60;
 
 const features = [
   {
@@ -34,7 +39,19 @@ function barHeight(uptime: number) {
   return Math.min(100, Math.max(20, scaled));
 }
 
-export default function Home() {
+// The preview shows a real published monitor when there is one, but the landing
+// page should still render if the database is unreachable.
+async function loadFeatured(): Promise<PublicStatus | null> {
+  try {
+    return await getFeaturedStatus();
+  } catch {
+    return null;
+  }
+}
+
+export default async function Home() {
+  const featured = await loadFeatured();
+
   return (
     <div className="flex flex-1 flex-col bg-zinc-950 text-zinc-100">
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-6">
@@ -43,9 +60,9 @@ export default function Home() {
           Pulse
         </span>
         <nav className="flex items-center gap-6 text-sm text-zinc-400">
-          <a className="transition-colors hover:text-zinc-100" href="#preview">
-            Preview
-          </a>
+          <Link className="transition-colors hover:text-zinc-100" href="/status">
+            Status pages
+          </Link>
           <Link className="transition-colors hover:text-zinc-100" href="/dashboard">
             Dashboard
           </Link>
@@ -92,22 +109,45 @@ export default function Home() {
           id="preview"
           className="scroll-mt-6 rounded-xl border border-zinc-800 bg-zinc-900/50 p-6"
         >
-          <div className="flex items-baseline justify-between">
-            <h2 className="font-medium">api.example.com</h2>
-            <span className="text-sm text-zinc-500">last 30 days</span>
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 className="truncate font-medium">
+              {featured ? featured.name : "api.example.com"}
+            </h2>
+            <span className="shrink-0 text-sm text-zinc-500">
+              {featured
+                ? `${formatUptime(featured.uptime30d)} · last 30 days`
+                : "last 30 days"}
+            </span>
           </div>
-          <div className="mt-4 flex h-12 items-end gap-1">
-            {previewBars.map((uptime, i) => (
-              <div
-                key={i}
-                className={`flex-1 rounded-sm ${barTone(uptime)}`}
-                style={{ height: `${barHeight(uptime)}%` }}
-                title={`${uptime}% uptime`}
-              />
-            ))}
-          </div>
+
+          {featured ? (
+            <div className="mt-4">
+              <UptimeBars days={featured.days} />
+            </div>
+          ) : (
+            <div className="mt-4 flex h-12 items-end gap-1">
+              {previewBars.map((uptime, i) => (
+                <div
+                  key={i}
+                  className={`flex-1 rounded-sm ${barTone(uptime)}`}
+                  style={{ height: `${barHeight(uptime)}%` }}
+                  title={`${uptime}% uptime`}
+                />
+              ))}
+            </div>
+          )}
+
           <p className="mt-4 text-sm text-zinc-500">
-            Sample rendering. Live check data arrives with the monitoring engine.
+            {featured ? (
+              <Link
+                href={`/status/${featured.slug}`}
+                className="text-emerald-400 transition-colors hover:text-emerald-300"
+              >
+                Open the full status page →
+              </Link>
+            ) : (
+              "Sample rendering. Publish a monitor to show its real uptime here."
+            )}
           </p>
         </section>
 

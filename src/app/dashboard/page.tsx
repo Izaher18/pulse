@@ -75,15 +75,24 @@ export default async function DashboardPage() {
                         {status.text}
                       </span>
                     </div>
-                    <p className="mt-1 truncate text-sm text-zinc-500">
-                      {monitor.url}
-                    </p>
-                  </div>
+                      <p className="mt-1 truncate text-sm text-zinc-500">
+                        {monitor.url}
+                      </p>
+                      {monitor.isPublic ? (
+                        <Link
+                          href={`/status/${monitor.slug}`}
+                          className="mt-1 inline-block truncate text-sm text-emerald-500/90 transition-colors hover:text-emerald-400"
+                        >
+                          /status/{monitor.slug}
+                        </Link>
+                      ) : null}
+                    </div>
 
-                  <MonitorControls
-                    monitorId={monitor.id}
-                    enabled={monitor.enabled}
-                  />
+                    <MonitorControls
+                      monitorId={monitor.id}
+                      enabled={monitor.enabled}
+                      isPublic={monitor.isPublic}
+                    />
                 </div>
 
                 <dl className="mt-4 grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
