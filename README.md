@@ -1,11 +1,13 @@
 # Pulse
 
+[![CI](https://github.com/Izaher18/pulse/actions/workflows/ci.yml/badge.svg)](https://github.com/Izaher18/pulse/actions/workflows/ci.yml)
+
 Uptime monitoring with public status pages. Pulse polls your endpoints on a
 schedule, records the status code and response time of every check, and turns
 that history into uptime percentages you can publish.
 
-> **Status:** in progress. The data model, check engine, dashboard, and public
-> status pages are done; CI and deployment are next. See the roadmap below.
+> **Status:** in progress. The data model, check engine, dashboard, public
+> status pages, and CI are done; deployment is next. See the roadmap below.
 
 ## Why I built it
 
