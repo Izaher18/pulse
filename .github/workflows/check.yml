@@ -1,0 +1,36 @@
+name: Run checks
+
+# Vercel's Hobby plan caps cron jobs at one run per day, which is useless for
+# uptime monitoring. This workflow is the actual scheduler: it calls the same
+# endpoint on the deployed app every five minutes, which is the shortest
+# interval GitHub offers. Runs can be delayed under load, so treat the cadence
+# as best effort.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    # PULSE_URL is a repository variable, so this is a no-op until the app is
+    # deployed and the variable is set.
+    if: vars.PULSE_URL != ''
+
+    steps:
+      - name: Run due checks on the deployed app
+        run: |
+          status=$(curl -sS -o response.json -w '%{http_code}' \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$PULSE_URL/api/cron/checks")
+
+          cat response.json
+          echo
+
+          if [ "$status" != "200" ]; then
+            echo "::error::Check endpoint returned HTTP $status"
+            exit 1
+          fi
+        env:
+          PULSE_URL: ${{ vars.PULSE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}

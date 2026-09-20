@@ -73,6 +73,45 @@ check opens an incident; the next success closes it.
 
 `npx prisma studio` opens a table browser for monitors, checks, and incidents.
 
+## Deploying
+
+The app is a standard Next.js deploy; the interesting part is the scheduler.
+
+Set these environment variables on the host, pointing `DATABASE_URL` at hosted
+Postgres, then apply migrations with `npx prisma migrate deploy`:
+
+```
+DATABASE_URL
+CRON_SECRET
+DASHBOARD_PASSWORD
+SESSION_SECRET
+```
+
+Scheduling is awkward on Vercel's free plan, which rejects any cron that runs
+more than once a day — `* * * * *` fails at deploy time. `vercel.json` therefore
+keeps a once-daily run as a backstop, and the real schedule lives in
+`.github/workflows/check.yml`, which calls `/api/cron/checks` on the deployed
+app every five minutes. Actions minutes are free on public repositories.
+
+That workflow needs two settings on the repository: a `PULSE_URL` variable
+holding the deployed origin, and a `CRON_SECRET` secret matching the deployed
+one. Until `PULSE_URL` is set the workflow does nothing. Two caveats: scheduled
+runs can be delayed when GitHub is busy, and GitHub disables scheduled
+workflows after 60 days without repository activity. On a Vercel plan that
+allows minutely crons, change `vercel.json` to `* * * * *` and delete the
+workflow.
+
+Whatever the scheduler's cadence is becomes the real resolution of every
+monitor: a monitor set to 60 seconds is still only polled when a tick happens.
+
+## CI
+
+`.github/workflows/ci.yml` runs on every push and pull request against a
+Postgres service container: migrations, lint, typecheck, tests, and a
+production build. It also diffs the migrated database against
+`schema.prisma`, which fails the build if the schema was edited without a
+matching migration.
+
 ## Status pages
 
 Every monitor is private until you press **Publish** in the dashboard, which
