@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    # The build prerenders pages that read from Postgres, so CI needs a real
+    # database rather than a stubbed connection string.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: pulse
+          POSTGRES_PASSWORD: pulse
+          POSTGRES_DB: pulse
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pulse -d pulse"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://pulse:pulse@localhost:5432/pulse?schema=public
+      CRON_SECRET: ci-not-a-real-secret
+      DASHBOARD_PASSWORD: ci-not-a-real-password
+      SESSION_SECRET: ci-not-a-real-secret
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx prisma migrate deploy
+
+      # Catches a schema.prisma edit that was never turned into a migration:
+      # the diff against the migrated database must come back empty.
+      - name: Check migrations match the schema
+        run: npx prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      - run: npm test
+
+      - run: npm run build
