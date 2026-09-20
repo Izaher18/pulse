@@ -16,8 +16,19 @@ function dot(state: PublicMonitorCard["state"]): string {
   return "bg-zinc-500";
 }
 
+// This page is prerendered, and a build can run before the database is
+// reachable. Returning null keeps the deploy alive and lets the page fill in on
+// its next revalidation, without claiming that nothing is published.
+async function loadMonitors(): Promise<PublicMonitorCard[] | null> {
+  try {
+    return await listPublicMonitors();
+  } catch {
+    return null;
+  }
+}
+
 export default async function StatusIndexPage() {
-  const monitors = await listPublicMonitors();
+  const monitors = await loadMonitors();
 
   return (
     <div className="flex flex-1 flex-col bg-zinc-950 text-zinc-100">
@@ -27,7 +38,11 @@ export default async function StatusIndexPage() {
           Every service published from this Pulse instance.
         </p>
 
-        {monitors.length === 0 ? (
+        {monitors === null ? (
+          <p className="mt-8 rounded-xl border border-dashed border-zinc-800 p-8 text-center text-sm text-zinc-500">
+            Status pages are temporarily unavailable. Try again in a minute.
+          </p>
+        ) : monitors.length === 0 ? (
           <p className="mt-8 rounded-xl border border-dashed border-zinc-800 p-8 text-center text-sm text-zinc-500">
             Nothing is published yet. Monitors stay private until someone
             publishes them from the dashboard.
