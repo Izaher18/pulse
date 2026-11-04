@@ -6,8 +6,9 @@ Uptime monitoring with public status pages. Pulse polls your endpoints on a
 schedule, records the status code and response time of every check, and turns
 that history into uptime percentages you can publish.
 
-> **Status:** in progress. The data model, check engine, dashboard, public
-> status pages, and CI are done; deployment is next. See the roadmap below.
+> **Status:** deployed at
+> [pulse-izaherprojects.vercel.app](https://pulse-izaherprojects.vercel.app),
+> with checks running every five minutes. See the roadmap below.
 
 ## Why I built it
 
@@ -145,7 +146,7 @@ windows — rather than by loading a month of checks into the app.
 - [x] **Check engine** — scheduled HTTP polling with timeouts and retries
 - [x] **Dashboard** — authenticated CRUD for monitors
 - [x] **Status pages** — public, read-only uptime pages per monitor
-- [ ] **CI and deploy** — GitHub Actions test run, deployed to Vercel
+- [x] **CI and deploy** — GitHub Actions test run, deployed to Vercel
 
 ## License
 
