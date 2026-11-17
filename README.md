@@ -27,7 +27,14 @@ while the write path is busy.
 - A password-protected dashboard built on Server Actions
 - Cached public status pages served straight from the check history
 
-## Running locally
+## Live website
+
+The website is published at
+[pulse-izaherprojects.vercel.app](https://pulse-izaherprojects.vercel.app).
+Open that URL to use Pulse. Checks run against the deployed app every five
+minutes, and public status pages are available from the homepage.
+
+### Running a local copy
 
 ```bash
 cp .env.example .env
@@ -38,7 +45,7 @@ npx prisma db seed
 npm run dev
 ```
 
-The app runs at [http://localhost:3000](http://localhost:3000). The seed
+A local copy runs at [http://localhost:3000](http://localhost:3000). The seed
 publishes one demo monitor, so `/status/api-example-com` has a month of history
 to render.
 
